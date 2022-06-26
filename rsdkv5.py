@@ -166,8 +166,9 @@ class RSDKv5(object):
         self.hash_to_file = {}
         if path is not None:
             f = open(path, "rb")
-            assert f.read(4) == "RSDK", "Invalid magic (expected RSDK)"
-            assert f.read(2) == "v5", "Invalid RSDK magic (expected v5)"
+            assert f.read(4) == "RSDK", "Invalid signature (expected RSDK)"
+            ver = f.read(2)
+            assert ver == "v5" or ver == "v4" or ver == "v3", "Invalid Datapack version (expected v5, v4 or v3 version signature)"
             files_count = struct.unpack("<H", f.read(2))[0]
             for i in xrange(files_count):
                 hash = swap_hash_endian(f.read(0x10))
@@ -211,5 +212,4 @@ class RSDKv5(object):
             offset += file_length
         for f in self.files:
             output_file.write(f.get_encrypted_data())
-
 
